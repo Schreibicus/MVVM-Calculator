@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
+using Calculator.Models;
 
 namespace Calculator.ViewModels
 {
     [Flags]
     public enum InputStringState
     {
-        None = 0, ReceivingNewOpernad = 1, IsDecimal = 2, IsFull = 4
+        None = 0, ReceivingNewOperand = 1, HasTwoOperands = 2, IsDecimal = 4, IsFull = 8, LastInputIsOperator = 16
     }
 
     public class MainViewModel : BindableBase 
@@ -28,8 +30,7 @@ namespace Calculator.ViewModels
                 if (_mainDisplayText.Count() >= 19) {
                     AddInputState(InputStringState.IsFull);
                 }
-            }
-            
+            }       
         }
         
         public string HistoryDisplayText
@@ -47,6 +48,8 @@ namespace Calculator.ViewModels
             DecimalKeyCommand = new ActionCommand(DoDecimalKeyCommand, ()=>!HasInputState(InputStringState.IsDecimal));
             PlusMinusKeyCommand = new ActionCommand(DoPlusMinusKeyCommand, ()=>true);
 
+            _calc = new CalculationModel();
+
             DoClearKeyCommand();
         }
 
@@ -54,12 +57,13 @@ namespace Calculator.ViewModels
         private void DoNumKeyCommand(object param)
         {
             if (HasInputState(InputStringState.IsFull)) { return; }
+            RemoveInputState(InputStringState.LastInputIsOperator);
 
-            if (HasInputState(InputStringState.ReceivingNewOpernad)) {
+            if (HasInputState(InputStringState.ReceivingNewOperand)) {
                 MainDisplayText = "";
 
                 if (param.ToString() != "0") {
-                    RemoveInputState(InputStringState.ReceivingNewOpernad);
+                    RemoveInputState(InputStringState.ReceivingNewOperand);
                 }              
             }
 
@@ -69,8 +73,33 @@ namespace Calculator.ViewModels
 
         private void DoOperandKeyCommand(object param)
         {
-            MainDisplayText += param.ToString();
-            HistoryDisplayText += param.ToString();
+            if(HasInputState(InputStringState.LastInputIsOperator)) {
+                string newOp = param.ToString();
+                if (newOp == _operator) { return; }
+
+                HistoryDisplayText = HistoryDisplayText.Remove(HistoryDisplayText.Length - 2) + newOp + " ";
+                _operator = newOp;
+                return;
+            }
+
+            AddInputState(InputStringState.LastInputIsOperator);
+
+            if (!HasInputState(InputStringState.ReceivingNewOperand)) {
+
+
+                AddInputState(InputStringState.ReceivingNewOperand);
+            }
+            
+            
+
+            double op = double.Parse(MainDisplayText, CultureInfo.InvariantCulture);
+            
+            _operand1 = op;
+            _operand2 = op;
+
+            HistoryDisplayText += MainDisplayText + " " + param + " ";
+            MainDisplayText = _operand2.ToString(CultureInfo.InvariantCulture);
+            
         }
 
         
@@ -79,20 +108,20 @@ namespace Calculator.ViewModels
             if (HasInputState(InputStringState.IsDecimal)) { return; }
 
             MainDisplayText += ".";
-            AddInputState(InputStringState.IsDecimal);
 
-            if (HasInputState(InputStringState.ReceivingNewOpernad)) {
-                RemoveInputState(InputStringState.ReceivingNewOpernad);
-            }
+            AddInputState(InputStringState.IsDecimal);
+            RemoveInputState(InputStringState.ReceivingNewOperand);        
         }
 
         
         private void DoPlusMinusKeyCommand()
         {
-            if (MainDisplayText == "0" || MainDisplayText == "0.") { return; } 
+            if ((MainDisplayText == "0") || (MainDisplayText == "0.")) { return; } 
 
             MainDisplayText = MainDisplayText.Contains('-') ? MainDisplayText.Remove(0, 1) 
                                                             : MainDisplayText.Insert(0, "-");
+
+            RemoveInputState(InputStringState.ReceivingNewOperand);
         }
 
 
@@ -101,9 +130,10 @@ namespace Calculator.ViewModels
             MainDisplayText = "0";
             HistoryDisplayText = "";
             SetInputState(InputStringState.None);
-            AddInputState(InputStringState.ReceivingNewOpernad);
-            //_operand1 = 0;
-            //_operand2 = 0;
+            AddInputState(InputStringState.ReceivingNewOperand);
+            _operand1 = 0;
+            _operand2 = 0;
+            _operator = "";
             //_result = 0;
         }
 
@@ -115,8 +145,10 @@ namespace Calculator.ViewModels
         private InputStringState _inputState;
         private string _mainDisplayText;
         private string _historyDisplayText;
-        //private double _operand1;
-        //private double _operand2;
+        private double _operand1;
+        private double _operand2;
+        private string _operator;
+        private CalculationModel _calc;
         //private double _result;
     }
 }
