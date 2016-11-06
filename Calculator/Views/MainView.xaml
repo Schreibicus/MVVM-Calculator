@@ -1,0 +1,69 @@
+﻿<Window x:Class="Calculator.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calculator.Views"
+        xmlns:viewModels="clr-namespace:Calculator.ViewModels"
+        mc:Ignorable="d"
+        Title="Calculator" Height="220" Width="220" ResizeMode="NoResize" Background="#FFE4F1F9">
+
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
+    <Grid HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="40"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row ="0" Grid.Column="0" Grid.ColumnSpan="5" Margin="2, 5, 2, 0"
+                FontSize="11" HorizontalContentAlignment ="Right" Padding="1,1,5,1"
+                 Content="{Binding Path=HistoryDisplayText, UpdateSourceTrigger=PropertyChanged}" BorderBrush="LightSlateGray" Background="White" BorderThickness="1,1,1,0" />
+
+        <Label Grid.Row ="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="2, 0, 2, 5" Padding="2,2,5,2"
+                FontSize="16" FontWeight="Bold" HorizontalContentAlignment ="Right" 
+                 Content="{Binding Path=MainDisplayText}" BorderBrush="LightSlateGray" Background="White" BorderThickness="1,0,1,1" />
+        
+        
+        <!--========================================================================-->
+        <!--NUMBER BUTTONS-->
+        <!--========================================================================-->
+        
+        <Button Grid.Row ="2" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="7">7</Button>
+        <Button Grid.Row ="2" Grid.Column="1" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="8">8</Button>
+        <Button Grid.Row ="2" Grid.Column="2" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="9">9</Button>
+        <Button Grid.Row ="3" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="4">4</Button>
+        <Button Grid.Row ="3" Grid.Column="1" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="5">5</Button>
+        <Button Grid.Row ="3" Grid.Column="2" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="6">6</Button>
+        <Button Grid.Row ="4" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="1">1</Button>
+        <Button Grid.Row ="4" Grid.Column="1" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="2">2</Button>
+        <Button Grid.Row ="4" Grid.Column="2" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="3">3</Button>
+        <Button Grid.Row ="5" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="0" Grid.ColumnSpan="2" >0</Button>
+        <Button Grid.Row ="5" Grid.Column="2" Margin="2" Command="{Binding DecimalKeyCommand}">.</Button>
+
+        <!--========================================================================-->
+        <!--OPERATOR BUTTONS-->
+        <!--========================================================================-->
+        <Button Grid.Row ="2" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="/">/</Button>
+        <Button Grid.Row ="2" Grid.Column="4" Margin="2" Command="{Binding ClearKeyCommand}">C</Button>
+        <Button Grid.Row ="3" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="*">*</Button>
+        <Button Grid.Row ="3" Grid.Column="4" Margin="2" Command="{Binding PlusMinusKeyCommand}">+-</Button>
+        <Button Grid.Row ="4" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="-">-</Button>
+        <Button Grid.Row ="4" Grid.Column="4" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="=" Grid.RowSpan ="2">=</Button>
+        <Button Grid.Row ="5" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="+">+</Button>
+    </Grid>
+</Window>
