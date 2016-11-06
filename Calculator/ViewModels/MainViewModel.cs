@@ -7,7 +7,7 @@ namespace Calculator.ViewModels
     [Flags]
     public enum InputStringState
     {
-        None = 0, NextNumIsNewOp = 1, IsDecimal = 2, IsFull = 4
+        None = 0, ReceivingNewOpernad = 1, IsDecimal = 2, IsFull = 4
     }
 
     public class MainViewModel : BindableBase 
@@ -38,14 +38,7 @@ namespace Calculator.ViewModels
             set { SetProperty(ref _historyDisplayText, value); }
         }
 
-        private InputStringState _inputState;
-        private string _mainDisplayText;
-        private string _historyDisplayText;
-        //private double _operand1;
-        //private double _operand2;
-        //private double _result;
-
-
+        
         public MainViewModel()
         {
             NumKeyCommand = new ActionCommand(DoNumKeyCommand, ()=>true);
@@ -62,11 +55,11 @@ namespace Calculator.ViewModels
         {
             if (HasInputState(InputStringState.IsFull)) { return; }
 
-            if (HasInputState(InputStringState.NextNumIsNewOp)) {
+            if (HasInputState(InputStringState.ReceivingNewOpernad)) {
                 MainDisplayText = "";
 
                 if (param.ToString() != "0") {
-                    RemoveInputState(InputStringState.NextNumIsNewOp);
+                    RemoveInputState(InputStringState.ReceivingNewOpernad);
                 }              
             }
 
@@ -88,8 +81,8 @@ namespace Calculator.ViewModels
             MainDisplayText += ".";
             AddInputState(InputStringState.IsDecimal);
 
-            if (HasInputState(InputStringState.NextNumIsNewOp)) {
-                RemoveInputState(InputStringState.NextNumIsNewOp);
+            if (HasInputState(InputStringState.ReceivingNewOpernad)) {
+                RemoveInputState(InputStringState.ReceivingNewOpernad);
             }
         }
 
@@ -108,7 +101,7 @@ namespace Calculator.ViewModels
             MainDisplayText = "0";
             HistoryDisplayText = "";
             SetInputState(InputStringState.None);
-            AddInputState(InputStringState.NextNumIsNewOp);
+            AddInputState(InputStringState.ReceivingNewOpernad);
             //_operand1 = 0;
             //_operand2 = 0;
             //_result = 0;
@@ -118,5 +111,12 @@ namespace Calculator.ViewModels
         private void RemoveInputState(InputStringState state) { _inputState &= ~state; }
         private void SetInputState(InputStringState state) { _inputState = state; }
         private bool HasInputState(InputStringState state) { return _inputState.HasFlag(state); }
+
+        private InputStringState _inputState;
+        private string _mainDisplayText;
+        private string _historyDisplayText;
+        //private double _operand1;
+        //private double _operand2;
+        //private double _result;
     }
 }
