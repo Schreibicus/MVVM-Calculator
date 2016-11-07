@@ -21,6 +21,7 @@ namespace Calculator.ViewModels
         public ICommand DecimalKeyCommand { get; private set; }
         public ICommand PlusMinusKeyCommand { get; private set; }
 
+
         public string MainDisplayText
         {
             get { return _mainDisplayText; }
@@ -28,7 +29,7 @@ namespace Calculator.ViewModels
             {
                 SetProperty(ref _mainDisplayText, value);
                 if (_mainDisplayText.Count() >= 19) {
-                    AddInputState(InputStringState.IsFull);
+                    _displayFull = true;
                 }
             }       
         }
@@ -45,10 +46,12 @@ namespace Calculator.ViewModels
             NumKeyCommand = new ActionCommand(DoNumKeyCommand, ()=>true);
             OperandKeyCommand = new ActionCommand(DoOperandKeyCommand, ()=>true);
             ClearKeyCommand = new ActionCommand(DoClearKeyCommand, ()=>true);
-            DecimalKeyCommand = new ActionCommand(DoDecimalKeyCommand, ()=>!HasInputState(InputStringState.IsDecimal));
+            DecimalKeyCommand = new ActionCommand(DoDecimalKeyCommand, ()=>!_currentOperand.IsDecimal);
             PlusMinusKeyCommand = new ActionCommand(DoPlusMinusKeyCommand, ()=>true);
 
-            _calc = new CalculationModel();
+            _calc = new ArithmeticModel();
+            _operand1 = new Operand();
+            _operand2 = new Operand();
 
             DoClearKeyCommand();
         }
@@ -56,99 +59,110 @@ namespace Calculator.ViewModels
 
         private void DoNumKeyCommand(object param)
         {
-            if (HasInputState(InputStringState.IsFull)) { return; }
-            RemoveInputState(InputStringState.LastInputIsOperator);
+            if (_displayFull) { return; }
 
-            if (HasInputState(InputStringState.ReceivingNewOperand)) {
-                MainDisplayText = "";
+            string newDigit = param.ToString();
 
-                if (param.ToString() != "0") {
-                    RemoveInputState(InputStringState.ReceivingNewOperand);
-                }              
+            if (_currentOperand.IsNew) {
+                if (newDigit != _currentOperand.Text) {_currentOperand.IsNew = false;}
+                MainDisplayText = _currentOperand.Text = newDigit;
+                return;
             }
 
-            MainDisplayText += param.ToString();
-         }
+            MainDisplayText += newDigit;
+            _currentOperand.Text = MainDisplayText;
+        }
 
 
         private void DoOperandKeyCommand(object param)
         {
-            if(HasInputState(InputStringState.LastInputIsOperator)) {
-                string newOp = param.ToString();
-                if (newOp == _operator) { return; }
+            string newOperator = param.ToString();
+           
+            //If only one operand present - save operator and begin entering second operand
+            if (!_operand2.IsEntered) {
+                _operator = newOperator;
+                HistoryDisplayText += _currentOperand.Text + " " + _operator + " ";
 
-                HistoryDisplayText = HistoryDisplayText.Remove(HistoryDisplayText.Length - 2) + newOp + " ";
-                _operator = newOp;
+                _operand2.Value = _operand1.Value;
+                _operand2.IsEntered = true;
+                _operand2.IsNew = true;
+                _currentOperand = _operand2;
+                MainDisplayText = _operand2.Text;
                 return;
             }
 
-            AddInputState(InputStringState.LastInputIsOperator);
 
-            if (!HasInputState(InputStringState.ReceivingNewOperand)) {
+            //If second operand is new - update operator
+            if (_operand2.IsNew) {
+                if (newOperator == _operator) { return; }
+                _operator = newOperator;
 
+                //replace operator ion history string - meh code...
+                HistoryDisplayText = HistoryDisplayText.Remove(HistoryDisplayText.Length - 2) + _operator + " ";
 
-                AddInputState(InputStringState.ReceivingNewOperand);
+                return;
             }
-            
-            
 
-            double op = double.Parse(MainDisplayText, CultureInfo.InvariantCulture);
-            
-            _operand1 = op;
-            _operand2 = op;
 
-            HistoryDisplayText += MainDisplayText + " " + param + " ";
-            MainDisplayText = _operand2.ToString(CultureInfo.InvariantCulture);
+            //Else - calculate and update history string
+            HistoryDisplayText += _currentOperand.Text + " " + newOperator + " ";
             
+            _operand1.Value = _calc.Calculate(_operand1.Value, _operand2.Value, _operator);
+            
+            _operand2.Clear();
+            _operand2.Value = _operand1.Value;
+            _operand1.IsNew = true;
+
+            _currentOperand = _operand2;
+            MainDisplayText = _currentOperand.Text;
+
+            _operator = newOperator;
         }
 
         
         private void DoDecimalKeyCommand()
         {
-            if (HasInputState(InputStringState.IsDecimal)) { return; }
+            if (_currentOperand.IsDecimal) { return; }
 
             MainDisplayText += ".";
-
-            AddInputState(InputStringState.IsDecimal);
-            RemoveInputState(InputStringState.ReceivingNewOperand);        
+            _currentOperand.IsNew = false;
+            _currentOperand.Text = MainDisplayText;
         }
 
         
         private void DoPlusMinusKeyCommand()
         {
-            if ((MainDisplayText == "0") || (MainDisplayText == "0.")) { return; } 
+            if (_currentOperand.Value == 0d) { return; }
 
-            MainDisplayText = MainDisplayText.Contains('-') ? MainDisplayText.Remove(0, 1) 
-                                                            : MainDisplayText.Insert(0, "-");
-
-            RemoveInputState(InputStringState.ReceivingNewOperand);
+            _currentOperand.Value *= -1.0;
+            _currentOperand.IsNew = false;
+            MainDisplayText = _currentOperand.Text;
         }
 
 
         private void DoClearKeyCommand()
         {
-            MainDisplayText = "0";
+            _operand1.Clear();
+            _operand2.Invalidate();
+            _currentOperand = _operand1;
+            
+            MainDisplayText = _operand1.Text;
             HistoryDisplayText = "";
-            SetInputState(InputStringState.None);
-            AddInputState(InputStringState.ReceivingNewOperand);
-            _operand1 = 0;
-            _operand2 = 0;
-            _operator = "";
-            //_result = 0;
+            _displayFull = false;
         }
 
-        private void AddInputState(InputStringState state) {_inputState |= state; }
-        private void RemoveInputState(InputStringState state) { _inputState &= ~state; }
-        private void SetInputState(InputStringState state) { _inputState = state; }
-        private bool HasInputState(InputStringState state) { return _inputState.HasFlag(state); }
 
-        private InputStringState _inputState;
         private string _mainDisplayText;
         private string _historyDisplayText;
-        private double _operand1;
-        private double _operand2;
+
+        private bool _displayFull;
+        
+        private ArithmeticModel _calc;
+
+        private Operand _operand1;
+        private Operand _operand2;
+        private Operand _currentOperand;
         private string _operator;
-        private CalculationModel _calc;
-        //private double _result;
+
     }
 }
