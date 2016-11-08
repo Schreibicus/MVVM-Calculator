@@ -18,7 +18,9 @@ namespace Calculator.Models
             {
                 _text = value;
                 _value = double.Parse(_text, CultureInfo.InvariantCulture);
-                IsDecimal = !(_value % 1 == 0d);
+                //IsDecimal = (Math.Abs(_value % 1) < double.Epsilon); //doesn't correctly evaluate "0." in _text
+                IsDecimal = _text.Contains(".");
+
             }
         }
 
@@ -31,7 +33,7 @@ namespace Calculator.Models
             {
                 _value = value;
                 _text = _value.ToString(CultureInfo.InvariantCulture);
-                IsDecimal = !(_value % 1 == 0d);
+                IsDecimal = _text.Contains(".");
             }
         }
 

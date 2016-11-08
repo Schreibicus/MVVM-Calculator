@@ -41,29 +41,28 @@
         
         <!--========================================================================-->
         <!--NUMBER BUTTONS-->
-        <!--========================================================================-->
-        
-        <Button Grid.Row ="2" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="7">7</Button>
-        <Button Grid.Row ="2" Grid.Column="1" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="8">8</Button>
-        <Button Grid.Row ="2" Grid.Column="2" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="9">9</Button>
-        <Button Grid.Row ="3" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="4">4</Button>
-        <Button Grid.Row ="3" Grid.Column="1" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="5">5</Button>
-        <Button Grid.Row ="3" Grid.Column="2" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="6">6</Button>
-        <Button Grid.Row ="4" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="1">1</Button>
-        <Button Grid.Row ="4" Grid.Column="1" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="2">2</Button>
-        <Button Grid.Row ="4" Grid.Column="2" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="3">3</Button>
-        <Button Grid.Row ="5" Grid.Column="0" Margin="2" Command="{Binding NumKeyCommand}" CommandParameter="0" Grid.ColumnSpan="2" >0</Button>
-        <Button Grid.Row ="5" Grid.Column="2" Margin="2" Command="{Binding DecimalKeyCommand}">.</Button>
+        <!--========================================================================-->      
+        <Button Grid.Row ="2" Grid.Column="0" Margin="2" Command="{Binding NumberCommand}" CommandParameter="7">7</Button>
+        <Button Grid.Row ="2" Grid.Column="1" Margin="2" Command="{Binding NumberCommand}" CommandParameter="8">8</Button>
+        <Button Grid.Row ="2" Grid.Column="2" Margin="2" Command="{Binding NumberCommand}" CommandParameter="9">9</Button>
+        <Button Grid.Row ="3" Grid.Column="0" Margin="2" Command="{Binding NumberCommand}" CommandParameter="4">4</Button>
+        <Button Grid.Row ="3" Grid.Column="1" Margin="2" Command="{Binding NumberCommand}" CommandParameter="5">5</Button>
+        <Button Grid.Row ="3" Grid.Column="2" Margin="2" Command="{Binding NumberCommand}" CommandParameter="6">6</Button>
+        <Button Grid.Row ="4" Grid.Column="0" Margin="2" Command="{Binding NumberCommand}" CommandParameter="1">1</Button>
+        <Button Grid.Row ="4" Grid.Column="1" Margin="2" Command="{Binding NumberCommand}" CommandParameter="2">2</Button>
+        <Button Grid.Row ="4" Grid.Column="2" Margin="2" Command="{Binding NumberCommand}" CommandParameter="3">3</Button>
+        <Button Grid.Row ="5" Grid.Column="0" Margin="2" Command="{Binding NumberCommand}" CommandParameter="0" Grid.ColumnSpan="2" >0</Button>
+        <Button Grid.Row ="5" Grid.Column="2" Margin="2" Command="{Binding MakeDecimalCommand}">.</Button>
 
         <!--========================================================================-->
         <!--OPERATOR BUTTONS-->
         <!--========================================================================-->
-        <Button Grid.Row ="2" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="/">/</Button>
-        <Button Grid.Row ="2" Grid.Column="4" Margin="2" Command="{Binding ClearKeyCommand}">C</Button>
-        <Button Grid.Row ="3" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="*">*</Button>
-        <Button Grid.Row ="3" Grid.Column="4" Margin="2" Command="{Binding PlusMinusKeyCommand}">+-</Button>
-        <Button Grid.Row ="4" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="-">-</Button>
-        <Button Grid.Row ="4" Grid.Column="4" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="=" Grid.RowSpan ="2">=</Button>
-        <Button Grid.Row ="5" Grid.Column="3" Margin="2" Command="{Binding OperandKeyCommand}" CommandParameter="+">+</Button>
+        <Button Grid.Row ="2" Grid.Column="3" Margin="2" Command="{Binding OperandCommand}" CommandParameter="/">/</Button>
+        <Button Grid.Row ="2" Grid.Column="4" Margin="2" Command="{Binding ClearCommand}">C</Button>
+        <Button Grid.Row ="3" Grid.Column="3" Margin="2" Command="{Binding OperandCommand}" CommandParameter="*">*</Button>
+        <Button Grid.Row ="3" Grid.Column="4" Margin="2" Command="{Binding ChangeSignCommand}">+-</Button>
+        <Button Grid.Row ="4" Grid.Column="3" Margin="2" Command="{Binding OperandCommand}" CommandParameter="-">-</Button>
+        <Button Grid.Row ="4" Grid.Column="4" Margin="2" Command="{Binding CalculateCommand}" Grid.RowSpan ="2">=</Button>
+        <Button Grid.Row ="5" Grid.Column="3" Margin="2" Command="{Binding OperandCommand}" CommandParameter="+">+</Button>
     </Grid>
 </Window>
